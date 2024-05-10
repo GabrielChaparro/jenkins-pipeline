@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        maven "remote"
+    }
     stages {
         stage('Build') {
             steps {
