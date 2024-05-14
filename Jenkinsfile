@@ -27,7 +27,6 @@ pipeline {
                     -Dsonar.sources=src/ \
                     -Dsonar.java.binaries=target/classes/ \
                     -Dsonar.exclusions=src/test/java/****/*.java \
-                    -Dsonar.java.libraries=/var/lib/jenkins/.m2/**/*.jar \
                     -Dsonar.projectVersion=${BUILD_NUMBER}-${GIT_COMMIT_SHORT}'''
                 }
             }
