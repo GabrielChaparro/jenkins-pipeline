@@ -23,10 +23,9 @@ pipeline {
                 withSonarQubeEnv(credentialsId: 'jenkins', installationName: 'sonar') {
                     sh '''$SCANNER_HOME/bin/sonar-scanner \
                     -Dsonar.projectKey=projectKey \
-                    -Dsonar.projectName=projectName \
                     -Dsonar.sources=src/ \
+                    -Dsonar.projectName=projectName \
                     -Dsonar.java.binaries=target/classes/ \
-                    -Dsonar.exclusions=src/test/java/****/*.java \
                     -Dsonar.projectVersion=${BUILD_NUMBER}-${GIT_COMMIT_SHORT}'''
                 }
             }
