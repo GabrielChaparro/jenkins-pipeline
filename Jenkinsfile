@@ -12,10 +12,16 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                // Run SonarQube scanner
-                withSonarQubeEnv('sonar') {
-                    sh 'mvn sonar:sonar'
+                dir("${WORKSPACE}"){
+                // Run SonarQube analysis for Python
+                script {
+                    def scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withSonarQubeEnv('sonar') {
+                        sh "echo $pwd"
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
+            }
             }
         }
         stage('Quality Gate') {
