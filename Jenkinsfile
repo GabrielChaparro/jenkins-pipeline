@@ -1,41 +1,48 @@
 pipeline {
     agent any
+    environmment {
+        GIT_COMMIT_SHORT = sh(
+            script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
+            returnStdout: true
+        )
+    }
     tools {
         maven "remote"
     }
     stages {
-        stage('Build') {
+        stage('Build Project') {
             steps {
-                sh 'mvn -version'
                 sh 'mvn clean install'
             }
         }
         stage('SonarQube Analysis') {
-            steps {
-                dir("${WORKSPACE}"){
-                // Run SonarQube analysis for Python
-                script {
-                    def scannerHome = tool name: 'sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-                    withSonarQubeEnv('sonar') {
-                        sh "echo $pwd"
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
+            environment {
+                SCANNER_HOME = tool 'sonar-scanner'
             }
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonarqube', installationName: 'sonarqube') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                    -Dsonar.projectKey=projectKey \
+                    -Dsonar.projectName=projectName \
+                    -Dsonar.sources=src/ \
+                    -Dsonar.java.binaries=target/classes/ \
+                    -Dsonar.exclusions=src/test/java/****/*.java \
+                    -Dsonar.java.libraries=/var/lib/jenkins/.m2/**/*.jar \
+                    -Dsonar.projectVersion=${BUILD_NUMBER}-${GIT_COMMIT_SHORT}'''
+                }
             }
         }
-        stage('Quality Gate') {
+        stage('SQuality Gate') {
             steps {
-                // Wait for SonarQube analysis to complete and check the quality gate
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
+            timeout(time: 1, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+            }
             }
         }
     }
-   post {
-        always {
-            cleanWs()
-        }
-   }
+    post {
+            always {
+                cleanWs()
+            }
+    }
 }
