@@ -30,6 +30,14 @@ pipeline {
                 }
             }
         }
+        stage('OWASP Dependency Check') {
+            steps {
+                script {
+                    // Run OWASP Dependency Check
+                    sh 'mvn org.owasp:dependency-check-maven:check'
+                }
+            }
+        }
     }
     post {
             always {
