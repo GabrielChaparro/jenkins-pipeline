@@ -30,12 +30,15 @@ pipeline {
                 }
             }
         }
-        stage('OWASP Dependency Check') {
+        stage('OWASP Dependency-Check Vulnerabilities') {
             steps {
-                script {
-                    // Run OWASP Dependency Check
-                    sh 'mvn org.owasp:dependency-check-maven:check'
-                }
+                dependencyCheck additionalArguments: ''' 
+                            -o './'
+                            -s './'
+                            -f 'ALL' 
+                            --prettyPrint''', odcInstallation: 'owasp'
+                
+                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
     }
