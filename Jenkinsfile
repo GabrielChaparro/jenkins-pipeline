@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker { 
+            image 'maven:3.9.6-eclipse-temurin-17-alpine'
+            label 'docker' 
+        }
+    }
     environment {
         GIT_COMMIT_SHORT = sh(
             script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
