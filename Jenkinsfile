@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         GIT_COMMIT_SHORT = sh(
+            DOCKER_IMAGE = 'prime-app'
             script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
             returnStdout: true
         )
@@ -39,6 +40,14 @@ pipeline {
                             --prettyPrint''', odcInstallation: 'owasp'
                 
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                // Build the Docker image
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
             }
         }
     }
