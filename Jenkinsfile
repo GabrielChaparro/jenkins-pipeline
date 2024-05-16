@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         GIT_COMMIT_SHORT = sh(
-            DOCKER_IMAGE = 'prime-app'
+            DOCKER_IMAGE = 'prime-app',
             script: "printf \$(git rev-parse --short ${GIT_COMMIT})",
             returnStdout: true
         )
